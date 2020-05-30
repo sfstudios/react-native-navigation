@@ -28,9 +28,11 @@
 
 - (void)bindViewController:(UINavigationController *)boundViewController {
     [super bindViewController:boundViewController];
+#if !TARGET_OS_TV
     _topBarPresenter = [TopBarPresenterCreator createWithBoundedNavigationController:self.stackController];
     _interactivePopGestureDelegate.navigationController = boundViewController;
     _interactivePopGestureDelegate.originalDelegate = boundViewController.interactivePopGestureRecognizer.delegate;
+#endif
 }
 
 - (void)componentDidAppear {
@@ -50,7 +52,7 @@
     [super applyOptions:options];
     RNNStackController* stack = self.stackController;
     RNNNavigationOptions * withDefault = [options withDefault:[self defaultOptions]];
-    
+#if !TARGET_OS_TV
     [_interactivePopGestureDelegate setEnabled:[withDefault.popGesture getWithDefaultValue:YES]];
     stack.interactivePopGestureRecognizer.delegate = _interactivePopGestureDelegate;
 
@@ -61,6 +63,7 @@
     [stack hideBarsOnScroll:[withDefault.topBar.hideOnScroll getWithDefaultValue:NO]];
     
     [_topBarPresenter applyOptions:withDefault.topBar];
+#endif
     
     [stack setNavigationBarBlur:[withDefault.topBar.background.blur getWithDefaultValue:NO]];
     [stack setNavigationBarClipsToBounds:[withDefault.topBar.background.clipToBounds getWithDefaultValue:NO]];
@@ -104,7 +107,9 @@
     }
     
     if (options.topBar.barStyle.hasValue) {
+#if !TARGET_OS_TV
         [stack setBarStyle:[RCTConvert UIBarStyle:options.topBar.barStyle.get]];
+#endif
     }
     
     if (options.topBar.background.clipToBounds.hasValue) {
